@@ -1,0 +1,6 @@
+* text=auto eol=lf
+
+*.pdf -text
+*.png -text
+*.jpg -text
+*.jpeg -text
