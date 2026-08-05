@@ -43,8 +43,7 @@ void absVector(float *values, float *output, int N)
 void clampedExpVector(float *values, int *exponents, float *output, int N)
 {
   //
-  // PP STUDENTS TODO: Implement your vectorized version of
-  // clampedExpSerial() here.
+  // Vectorized clamped exponentiation with per-lane masking.
   //
   // Your solution should work for any value of
   // N and VECTOR_WIDTH, not just when VECTOR_WIDTH divides N
@@ -118,7 +117,7 @@ float arraySumVector(float *values, int N)
 {
 
   //
-  // PP STUDENTS TODO: Implement your vectorized version of arraySumSerial here
+  // Vectorized array reduction.
   //
   // Initialize a mask with all bits set (all lanes active)
   __pp_mask maskAll = _pp_init_ones();

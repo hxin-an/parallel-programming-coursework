@@ -85,9 +85,7 @@ void mandelbrot_thread(int num_threads,
 
     for (int i = 0; i < num_threads; i++)
     {
-        // TODO FOR PP STUDENTS: You may or may not wish to modify
-        // the per-thread arguments here.  The code below copies the
-        // same arguments for each thread
+        // Copy the shared image parameters into each worker's arguments.
         args[i].x0 = x0;
         args[i].y0 = y0;
         args[i].x1 = x1;
@@ -117,4 +115,3 @@ void mandelbrot_thread(int num_threads,
         workers[i].join();
     }
 }
-

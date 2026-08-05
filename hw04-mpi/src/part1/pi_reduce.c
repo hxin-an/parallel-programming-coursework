@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     int world_rank, world_size;
     // ---
 
-    // TODO: MPI init
+    // Read the MPI world size and current rank.
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
     
@@ -33,38 +33,15 @@ int main(int argc, char **argv)
             number_in_circle++;
     }
 
-    // TODO: binary tree redunction
-    // Binary tree reduction
-    int step = 1;
-    while (step < world_size)
-    {
-        if (world_rank % (2 * step) == 0)
-        {
-            // Receiver
-            if (world_rank + step < world_size)
-            {
-                // Receive data from the corresponding sender
-                long long int received_count;
-                MPI_Recv(&received_count, 1, MPI_LONG_LONG, world_rank + step, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                number_in_circle += received_count;
-                // printf("Process %d received %lld points inside circle from process %d.\n", world_rank, received_count, world_rank + step);
-            }       
-        }
-        else if (world_rank % (2 * step) == step)
-        {
-            // Sender
-            int target = world_rank - step;
-            // Send data to the corresponding receiver
-            MPI_Send(&number_in_circle, 1, MPI_LONG_LONG, target, 0, MPI_COMM_WORLD);
-            break; // This process is done
-        }
-        step *= 2;
-    }
+    // Sum all local hit counts at rank zero with MPI_Reduce.
+    long long int total_in_circle = 0;
+    // reduce all local counts into total_in_circle at root process (rank 0)
+    MPI_Reduce(&number_in_circle, &total_in_circle, 1, MPI_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
 
     if (world_rank == 0)
     {
-        // TODO: PI result
-        pi_result = 4.0 * number_in_circle / tosses;
+        // Convert the reduced hit count into an estimate of pi.
+        pi_result = 4.0 * total_in_circle / tosses;
 
         // --- DON'T TOUCH ---
         double end_time = MPI_Wtime();
@@ -76,4 +53,3 @@ int main(int argc, char **argv)
     MPI_Finalize();
     return 0;
 }
-

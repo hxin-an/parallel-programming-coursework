@@ -2,6 +2,8 @@
 
 Six implementations that apply parallelism at different levels: vector instructions, CPU threads, shared memory, distributed memory, CUDA, and OpenCL.
 
+Each homework is a self-contained portfolio entry. Start with the folder's `README.md`; submitted implementation files are grouped under `src/` rather than mixed at the repository root.
+
 ## What this shows
 
 - Vectorized irregular loops with masks and handled tails where the input size is not a multiple of the vector width.
@@ -26,4 +28,3 @@ Six implementations that apply parallelism at different levels: vector instructi
 ## Notes
 
 These files are the submitted implementation snapshots. The original course harness, shared headers, test data, and assignment statements are not redistributed, so some folders are intended for code review rather than standalone compilation.
-

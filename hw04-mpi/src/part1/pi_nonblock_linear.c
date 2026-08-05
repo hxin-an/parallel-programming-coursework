@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     int world_rank, world_size;
     // ---
 
-    // TODO: MPI init
+    // Read the MPI world size and current rank.
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
     
@@ -35,13 +35,13 @@ int main(int argc, char **argv)
 
     if (world_rank > 0)
     {
-        // TODO: MPI workers
+        // Workers send their local hit counts to rank zero.
         // Use blocking send 
         MPI_Send(&number_in_circle, 1, MPI_LONG_LONG, 0, 0, MPI_COMM_WORLD);
     }
     else if (world_rank == 0)
     {
-        // TODO: non-blocking MPI communication.
+        // Receive worker counts concurrently with non-blocking requests.
         // Use MPI_Irecv, MPI_Wait or MPI_Waitall.
 
         // MPI_Request requests[];
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 
     if (world_rank == 0)
     {
-        // TODO: PI result
+        // The estimate was computed after collecting all worker results.
         // PI result is already calculated above
 
         // --- DON'T TOUCH ---
@@ -85,4 +85,3 @@ int main(int argc, char **argv)
     MPI_Finalize();
     return 0;
 }
-

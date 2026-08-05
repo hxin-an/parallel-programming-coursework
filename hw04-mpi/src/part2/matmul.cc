@@ -188,8 +188,7 @@ void matrix_multiply(
 
 void destruct_matrices(int *a_mat, int *b_mat)
 {
-    /* TODO */
+    /* Release the input matrices allocated by the harness. */
     delete[] a_mat;
     delete[] b_mat;
 }
-

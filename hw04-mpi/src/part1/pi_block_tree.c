@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     int world_rank, world_size;
     // ---
 
-    // TODO: MPI init
+    // Read the MPI world size and current rank.
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
     
@@ -33,28 +33,38 @@ int main(int argc, char **argv)
             number_in_circle++;
     }
 
-    // TODO: use MPI_Gather
-    long long int *all_counts = NULL;
-    if (world_rank == 0)
+    // Reduce partial counts through a binary communication tree.
+    // Binary tree reduction
+    int step = 1;
+    while (step < world_size)
     {
-        // Allocate memory to gather results from all processes
-        all_counts = (long long int *)malloc(world_size * sizeof(long long int));
+        if (world_rank % (2 * step) == 0)
+        {
+            // Receiver
+            if (world_rank + step < world_size)
+            {
+                // Receive data from the corresponding sender
+                long long int received_count;
+                MPI_Recv(&received_count, 1, MPI_LONG_LONG, world_rank + step, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                number_in_circle += received_count;
+                // printf("Process %d received %lld points inside circle from process %d.\n", world_rank, received_count, world_rank + step);
+            }       
+        }
+        else if (world_rank % (2 * step) == step)
+        {
+            // Sender
+            int target = world_rank - step;
+            // Send data to the corresponding receiver
+            MPI_Send(&number_in_circle, 1, MPI_LONG_LONG, target, 0, MPI_COMM_WORLD);
+            break; // This process is done
+        }
+        step *= 2;
     }
-    MPI_Gather(&number_in_circle, 1, MPI_LONG_LONG, all_counts, 1, MPI_LONG_LONG, 0, MPI_COMM_WORLD);
 
     if (world_rank == 0)
     {
-        // TODO: PI result
-        // Aggregate results from all processes
-        long long int total_in_circle = 0;
-        for (int i = 0; i < world_size; i++)
-        {
-            total_in_circle += all_counts[i];
-        }
-        
-        pi_result = 4.0 * total_in_circle / tosses;
-        
-        free(all_counts);
+        // Convert the final hit count into an estimate of pi.
+        pi_result = 4.0 * number_in_circle / tosses;
 
         // --- DON'T TOUCH ---
         double end_time = MPI_Wtime();
@@ -66,4 +76,3 @@ int main(int argc, char **argv)
     MPI_Finalize();
     return 0;
 }
-

@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     // 用於建立可被其他 processes 存取的共享記憶體區域
     MPI_Win win;
 
-    // TODO: MPI init
+    // Read the MPI world size and current rank.
     // 獲取 MPI 環境資訊
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);  // 總共有多少個 processes
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);  // 當前 process 的編號 (0 到 world_size-1)
@@ -178,7 +178,7 @@ int main(int argc, char **argv)
 
     if (world_rank == 0)
     {
-        // TODO: handle PI result
+        // The estimate was computed after the RMA synchronization phase.
         // PI result is already calculated above
 
         // --- DON'T TOUCH ---
@@ -191,4 +191,3 @@ int main(int argc, char **argv)
     MPI_Finalize();
     return 0;
 }
-

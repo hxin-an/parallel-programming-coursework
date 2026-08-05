@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     int world_rank, world_size;
     // ---
 
-    // TODO: MPI init
+    // Read the MPI world size and current rank.
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
     
@@ -33,15 +33,28 @@ int main(int argc, char **argv)
             number_in_circle++;
     }
 
-    // TODO: use MPI_Reduce
-    long long int total_in_circle = 0;
-    // reduce all local counts into total_in_circle at root process (rank 0)
-    MPI_Reduce(&number_in_circle, &total_in_circle, 1, MPI_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+    // Gather each process's local hit count at rank zero.
+    long long int *all_counts = NULL;
+    if (world_rank == 0)
+    {
+        // Allocate memory to gather results from all processes
+        all_counts = (long long int *)malloc(world_size * sizeof(long long int));
+    }
+    MPI_Gather(&number_in_circle, 1, MPI_LONG_LONG, all_counts, 1, MPI_LONG_LONG, 0, MPI_COMM_WORLD);
 
     if (world_rank == 0)
     {
-        // TODO: PI result
+        // Aggregate the gathered counts and estimate pi.
+        // Aggregate results from all processes
+        long long int total_in_circle = 0;
+        for (int i = 0; i < world_size; i++)
+        {
+            total_in_circle += all_counts[i];
+        }
+        
         pi_result = 4.0 * total_in_circle / tosses;
+        
+        free(all_counts);
 
         // --- DON'T TOUCH ---
         double end_time = MPI_Wtime();
@@ -53,4 +66,3 @@ int main(int argc, char **argv)
     MPI_Finalize();
     return 0;
 }
-

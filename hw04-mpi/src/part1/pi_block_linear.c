@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     int world_rank, world_size;
     // ---
     
-    // TODO: init MPI
+    // Read the MPI world size and current rank.
     // Initialize MPI communication: get the total number of processes and the rank of the current process
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
@@ -80,4 +80,3 @@ int main(int argc, char **argv)
     MPI_Finalize();
     return 0;
 }
-

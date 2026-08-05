@@ -8,10 +8,10 @@ int main(int argc, char **argv)
     // implementations might need the arguments.
     MPI_Init(NULL, NULL);
 
-    // TODO: Get the number of processes
+    // Get the number of processes.
     int world_size;
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-    // TODO: Get the rank of the process
+    // Get the current process rank.
     int world_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
     // Get the name of the processor
